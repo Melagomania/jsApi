@@ -1,10 +1,107 @@
+function Page() {
+    this.tabsLinks = document.getElementById('tabs');
+    this.tabs = document.getElementsByClassName('content-block');
+    this.activeTabIndex = 0;
+
+    this.fullscreenEnabled = false;
+};
+
+Page.prototype.init = function () {
+    this.setLinkListeners();
+    this.setFullscreenTogglersHandler();
+};
+
+Page.prototype.setFullscreenTogglersHandler = function () {
+    var _this = this;
+    document.getElementById('content').addEventListener('click', function (e) {
+        if (e.target.classList.contains('fullscreen-toggler')) {
+            if (!_this.fullscreenEnabled) {
+                _this.enterFullscreenMode();
+                _this.fullscreenEnabled = true;
+                e.target.textContent = '-';
+            } else {
+                _this.exitFullscreenMode();
+                _this.fullscreenEnabled = false;
+                e.target.textContent = '+';
+            }
+        }
+    });
+};
+
+Page.prototype.setLinkListeners = function () {
+    this.tabsLinks.addEventListener('click', function (e) {
+        if (e.target.tagName === 'A') {
+            e.preventDefault();
+            var url = e.target.getAttribute('href');
+            Router.navigate(url);
+        }
+    });
+};
+
+Page.prototype.changeTab = function (newActiveTabIndex) {
+    this.tabs[this.activeTabIndex].style.display = 'none';
+    this.activeTabIndex = newActiveTabIndex;
+    this.tabs[this.activeTabIndex].style.display = 'block';
+};
+
+Page.prototype.enterFullscreenMode = function () {
+    if (this.tabs[this.activeTabIndex].requestFullscreen) {
+        this.tabs[this.activeTabIndex].requestFullscreen();
+    } else if (this.tabs[this.activeTabIndex].mozRequestFullScreen) {
+        this.tabs[this.activeTabIndex].mozRequestFullScreen();
+    } else if (this.tabs[this.activeTabIndex].webkitRequestFullscreen) {
+        this.tabs[this.activeTabIndex].webkitRequestFullscreen();
+    } else if (this.tabs[this.activeTabIndex].msRequestFullscreen) {
+        this.tabs[this.activeTabIndex].msRequestFullscreen();
+    }
+};
+
+Page.prototype.exitFullscreenMode = function () {
+    console.log('333');
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    }
+};
+
+var page = new Page();
+page.init();
+
+
+function Geolocation() {
+    this.locationHistory = [];
+    this.locationWatch = null;
+}
+
+Geolocation.prototype.startWatch = function () {
+    var _this = this;
+    this.locationWatch = navigator.geolocation.watchPosition(function (position) {
+        if (!_this.locationHistory.length) {
+            _this.locationHistory.push(position);
+        } else {
+            //TODO: fix IF
+            if (_this.locationHistory[_this.locationHistory.length - 1].latitude !== position.latitude || _this.locationHistory[_this.locationHistory.length - 1].longitude !== position.longitude) {
+                console.log('333');
+                _this.locationHistory.push(position);
+
+            }
+        }
+        console.log(_this.locationHistory);
+    });
+};
+
+var geolocation = new Geolocation();
+
 var Router = {
     routes: [],
     mode: null,
     root: '/',
     config: function (options) {
         this.mode = options && options.mode && options.mode == 'history' &&
-            !!(history.pushState) ? 'history' : 'hash';
+        !!(history.pushState) ? 'history' : 'hash';
         this.root = options && options.root ? '/' + this.clearSlashes(options.root) + '/' : '/';
         return this;
     },
@@ -93,9 +190,26 @@ Router.config({
     mode: 'history'
 });
 
-Router.add(/geolocation/, function() {
-   console.log('geo');
-}).check().listen();
+Router.add(/geolocation/, function () {
+    page.changeTab(1);
+    geolocation.startWatch();
+})
+    .add(/synccalculation/, function () {
+        page.changeTab(2);
+        console.log('sync');
+
+    })
+    .add(/webworker/, function () {
+        page.changeTab(3);
+        console.log('webw');
+    })
+    .add(function () {
+        page.changeTab(0);
+        Router.navigate('/');
+        console.log('default');
+    })
+    .check().listen();
+
 
 (function () {
     'use strict';
@@ -128,3 +242,5 @@ Router.add(/geolocation/, function() {
         document.querySelector('#syncresult').innerHTML = computePi();
     });
 })();
+
+
