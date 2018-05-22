@@ -1,0 +1,14 @@
+{
+  "name": "part-2-task",
+  "version": "0.1.0",
+  "description": "Simple server for JS API Part 2 home task",
+  "main": "server.js",
+  "author": "Andrii Dieiev",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.12.3"
+  },
+  "scripts": {
+    "start": "node ./server.js"
+  }
+}

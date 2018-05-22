@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS API Part 2</title>
+    <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<nav>
+    <ul class="tabs">
+        <li data-tab="default"><a href="/">Default</a></li>
+        <li data-tab="geolocation"><a href="/geolocation">Geolocation</a></li>
+        <li data-tab="synccalculation"><a href="/synccalculation">Sync calculation</a></li>
+        <li data-tab="webworker"><a href="/webworker">WebWorker</a></li>
+    </ul>
+</nav>
+<section class="content">
+    <div class="content-block" data-content="default">
+        This is default tab visible to user. Also all unresolved urls should point here.
+    </div>
+    <div class="content-block" data-content="geolocation">
+        <img src="/waiting.gif" alt="Map">
+    </div>
+    <div class="content-block" data-content="synccalculation">
+        <p>Example of long calculations that blocks page. This is example page.</p>
+
+        <p>Click on button and try to navigate to other tabs on the page or activate fullscreen.</p>
+        <button id="syncstart">Start sync calculation</button>
+        <p>Calculations result: <span id="syncresult">N/A</span></p>
+    </div>
+    <div class="content-block" data-content="webworker">
+        <p>This page should be updated normally</p>
+    </div>
+</section>
+<script src="script.js"></script>
+</body>
+</html>
